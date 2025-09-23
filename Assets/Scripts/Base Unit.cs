@@ -4,32 +4,55 @@ using UnityEngine;
 
 public class BaseUnit : MonoBehaviour
 {
-    int maxHealth = 100; // 최대 체력
-    int health = 100;    // 현재 체력
-    int maxMana = 50;    // 스킬에 필요한 마나값
-    int mana = 50;       // 마나
-    int minMana = 0;     // 스킬 사용한 뒤 마나 초기값
-    int armor = 5;       // 방어력
-    int criticalarmor = 5; // %계산 ex) 5일시 크리티컬 데미지 5% 감소
-    int attackSpeed = 1; // 공격 속도
-    int range = 10;      // 공격 사거리
-    int speed = 5;       // 이동속도
-    int attackPower = 10; // 공격력
-    int skillPower = 20; // 스킬 공격력
-    int level = 1;      // 레벨
-    int criticalChance = 5; // %계산 ex) 5일시 5% 확률로 크리티컬 발생 (기본공격, 스킬공격 포함)
-    int criticalDamage = 100; // %계산 ex) 100일시 크리티컬시 공격력 2배, 스킬도 크리티컬시 스킬 공격력 2배
-    int exp = 0;        // 경험치
+    [Header("기본 스탯")]
+    public int baseMaxHealth = 2000;
+    public int baseMana = 50;
+    public int baseAttackPower = 100;
+    public int baseSkillPower = 400;
 
-    public void TakeDamage(int damage)
+    [Header("멀티플라이어 시스템")]
+    public StatMultiplier healthMultiplier = new StatMultiplier();
+    public StatMultiplier manaRegenMultiplier = new StatMultiplier();
+    public StatMultiplier damageTakenMultiplier = new StatMultiplier();
+    public StatMultiplier attackPowerMultiplier = new StatMultiplier();
+    public StatMultiplier critChanceMultiplier = new StatMultiplier();
+    public StatMultiplier critDamageMultiplier = new StatMultiplier();
+
+    // 현재 값
+    public int CurrentHealth { get; private set; }
+    public int CurrentMana { get; private set; }
+
+    // 최종 계산된 값
+    public int MaxHealth => Mathf.RoundToInt(baseMaxHealth * healthMultiplier.GetMultiplier());
+    public int AttackPower => Mathf.RoundToInt(baseAttackPower * attackPowerMultiplier.GetMultiplier());
+    public int SkillPower => Mathf.RoundToInt(baseSkillPower * attackPowerMultiplier.GetMultiplier());
+
+    void Awake()
     {
-        health -= damage;
-        if (health <= 0)
-        {
-            Die();
-        }
+        CurrentHealth = baseMaxHealth;
+        CurrentMana = 0;
     }
-    public void Die()
+
+    public void Heal(float amount)
+    {
+        CurrentHealth = Mathf.Min(CurrentHealth + Mathf.RoundToInt(amount), MaxHealth);
+    }
+
+    public void GainMana(float amount)
+    {
+        CurrentMana = Mathf.Min(CurrentMana + Mathf.RoundToInt(amount * manaRegenMultiplier.GetMultiplier()), baseMana);
+    }
+
+    public void TakeDamage(int rawDamage)
+    {
+        float multiplier = damageTakenMultiplier.GetMultiplier();
+        int finalDamage = Mathf.RoundToInt(rawDamage * multiplier);
+
+        CurrentHealth -= finalDamage;
+        if (CurrentHealth <= 0) Die();
+    }
+
+    public virtual void Die()
     {
         Destroy(gameObject);
     }

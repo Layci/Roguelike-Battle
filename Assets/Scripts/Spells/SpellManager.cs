@@ -66,22 +66,22 @@ public class SpellManager : MonoBehaviour
         switch (card.effectType)
         {
             case SpellEffectType.HealthBuff:
-                unit.healthMultiplier.AddMultiplier(card.value);
+                unit.healthMultiplier.Add(card.value);
                 break;
             case SpellEffectType.ManaRegenBuff:
-                unit.manaRegenMultiplier.AddMultiplier(card.value);
+                unit.manaRegenMultiplier.Add(card.value);
                 break;
             case SpellEffectType.DamageReduction:
-                unit.damageTakenMultiplier.AddMultiplier(-card.value);
+                unit.damageTakenMultiplier.Add(-card.value);
                 break;
             case SpellEffectType.DamageIncrease:
-                unit.attackPowerMultiplier.AddMultiplier(card.value);
+                unit.attackPowerMultiplier.Add(card.value);
                 break;
             case SpellEffectType.CritChanceBuff:
-                unit.critChanceMultiplier.AddMultiplier(card.value);
+                unit.critChanceMultiplier.Add(card.value);
                 break;
             case SpellEffectType.CritDamageBuff:
-                unit.critDamageMultiplier.AddMultiplier(card.value);
+                //unit.critDamageMultiplier.AddMultiplier(card.value);
                 break;
         }
     }
@@ -108,22 +108,22 @@ public class SpellManager : MonoBehaviour
         switch (card.effectType)
         {
             case SpellEffectType.HealthBuff:
-                unit.healthMultiplier.RemoveMultiplier(card.value);
+                unit.healthMultiplier.Remove(card.value);
                 break;
             case SpellEffectType.ManaRegenBuff:
-                unit.manaRegenMultiplier.RemoveMultiplier(card.value);
+                unit.manaRegenMultiplier.Remove(card.value);
                 break;
             case SpellEffectType.DamageReduction:
-                unit.damageTakenMultiplier.RemoveMultiplier(-card.value);
+                unit.damageTakenMultiplier.Remove(-card.value);
                 break;
             case SpellEffectType.DamageIncrease:
-                unit.attackPowerMultiplier.RemoveMultiplier(card.value);
+                unit.attackPowerMultiplier.Remove(card.value);
                 break;
             case SpellEffectType.CritChanceBuff:
-                unit.critChanceMultiplier.RemoveMultiplier(card.value);
+                unit.critChanceMultiplier.Remove(card.value);
                 break;
             case SpellEffectType.CritDamageBuff:
-                unit.critDamageMultiplier.RemoveMultiplier(card.value);
+                //unit.critDamageMultiplier.RemoveMultiplier(card.value);
                 break;
         }
     }

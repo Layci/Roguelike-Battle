@@ -7,21 +7,23 @@ public class StatMultiplier
 {
     private List<float> multipliers = new List<float>();
 
-    public void AddMultiplier(float value)
+    public void Add(float value)
     {
-        multipliers.Add(1f + value); // ex) 0.2f = +20%, -0.3f = -30%
+        multipliers.Add(value);
     }
 
-    public void RemoveMultiplier(float value)
+    public void Remove(float value)
     {
-        multipliers.Remove(1f + value);
+        multipliers.Remove(value);
     }
 
     public float GetMultiplier()
     {
         float total = 1f;
         foreach (float m in multipliers)
+        {
             total *= m;
+        }
         return total;
     }
 }

@@ -4,11 +4,8 @@ using UnityEngine;
 
 public class BaseUnit : MonoBehaviour
 {
-    [Header("기본 스탯")]
-    public int baseMaxHealth = 2000;
-    public int baseMana = 50;
-    public int baseAttackPower = 100;
-    public int baseSkillPower = 400;
+    [Header("캐릭터 데이터 (원본 SO)")]
+    public CharacterData characterData;
 
     [Header("멀티플라이어 시스템")]
     public StatMultiplier healthMultiplier = new StatMultiplier();
@@ -23,14 +20,19 @@ public class BaseUnit : MonoBehaviour
     public int CurrentMana { get; private set; }
 
     // 최종 계산된 값
-    public int MaxHealth => Mathf.RoundToInt(baseMaxHealth * healthMultiplier.GetMultiplier());
-    public int AttackPower => Mathf.RoundToInt(baseAttackPower * attackPowerMultiplier.GetMultiplier());
-    public int SkillPower => Mathf.RoundToInt(baseSkillPower * attackPowerMultiplier.GetMultiplier());
+    public int MaxHealth => Mathf.RoundToInt(characterData.maxHealth * healthMultiplier.GetMultiplier());
+    public int AttackPower => Mathf.RoundToInt(characterData.attackPower * attackPowerMultiplier.GetMultiplier());
+    public int SkillPower => Mathf.RoundToInt(characterData.skillPower * attackPowerMultiplier.GetMultiplier());
+    public int CritChance => Mathf.RoundToInt(characterData.critChance * critChanceMultiplier.GetMultiplier());
+    public int CritDamage => Mathf.RoundToInt(characterData.critDamage * critDamageMultiplier.GetMultiplier());
 
     void Awake()
     {
-        CurrentHealth = baseMaxHealth;
-        CurrentMana = 0;
+        if (characterData != null)
+        {
+            CurrentHealth = characterData.maxHealth;
+            CurrentMana = 0;
+        }
     }
 
     public void Heal(float amount)
@@ -40,7 +42,7 @@ public class BaseUnit : MonoBehaviour
 
     public void GainMana(float amount)
     {
-        CurrentMana = Mathf.Min(CurrentMana + Mathf.RoundToInt(amount * manaRegenMultiplier.GetMultiplier()), baseMana);
+        CurrentMana = Mathf.Min(CurrentMana + Mathf.RoundToInt(amount * manaRegenMultiplier.GetMultiplier()), characterData.maxMana);
     }
 
     public void TakeDamage(int rawDamage)

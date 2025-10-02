@@ -10,6 +10,7 @@ public class CharacterData : ScriptableObject
     public int maxMana = 50;
     public int attackPower = 100;
     public int skillPower = 400;
+    public int moveSpeed = 5;
 
     [Header("±‚≈∏ Ω∫≈»")]
     public int armor = 5;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -8,27 +9,41 @@ public class BaseUnit : MonoBehaviour
     [Header("캐릭터 데이터 (원본 SO)")]
     public CharacterData characterData;
 
-    [Header("멀티플라이어 시스템")]
-    public StatMultiplier healthMultiplier = new StatMultiplier();
-    public StatMultiplier manaRegenMultiplier = new StatMultiplier();
-    public StatMultiplier damageTakenMultiplier = new StatMultiplier();
-    public StatMultiplier attackPowerMultiplier = new StatMultiplier();
-    public StatMultiplier critChanceMultiplier = new StatMultiplier();
-    public StatMultiplier critDamageMultiplier = new StatMultiplier();
+    [Header("상태 플래그")]
+    public bool isDead = false;
 
-    Animator animator;
+    [Header("멀티플라이어 시스템")]
+    public StatMultiplier healthMultiplier = new StatMultiplier(); // 체력
+    public StatMultiplier manaRegenMultiplier = new StatMultiplier(); // 마나 회복량
+    public StatMultiplier damageTakenMultiplier = new StatMultiplier(); // 받는 비해 감소량
+    public StatMultiplier attackPowerMultiplier = new StatMultiplier(); // 일반공격 데미지
+    public StatMultiplier attackSkillPowerMultiplier = new StatMultiplier(); // 스킬공격 데미지
+    public StatMultiplier critChanceMultiplier = new StatMultiplier();  // 크리티컬 확률
+    public StatMultiplier critDamageMultiplier = new StatMultiplier();  // 크리티컬 데미지
+    public StatMultiplier attackSpeedMultiplier = new StatMultiplier(); // 공격 애니메이션 속도
+    public StatMultiplier attackRangeMultiplier = new StatMultiplier(); // 공격 사거리
+    public StatMultiplier attackCooldownMultiplier = new StatMultiplier(); // 공격 속도
+
+    public Animator animator;
 
     // 현재 값
     public int CurrentHealth { get; private set; }
     public int CurrentMana { get; private set; }
+    public float CurrentAttackRange { get; private set; }
+    public float CurrentAttackCooldown { get; private set; }
 
     // 최종 계산된 값
     public int MaxHealth => Mathf.RoundToInt(characterData.maxHealth * healthMultiplier.GetMultiplier());
     public int MaxMana => characterData.maxMana;
+    public int ManaRegen => Mathf.RoundToInt(characterData.manaPerAttack * healthMultiplier.GetMultiplier());
     public int AttackPower => Mathf.RoundToInt(characterData.attackPower * attackPowerMultiplier.GetMultiplier());
     public int SkillPower => Mathf.RoundToInt(characterData.skillPower * attackPowerMultiplier.GetMultiplier());
     public int CritChance => Mathf.RoundToInt(characterData.critChance * critChanceMultiplier.GetMultiplier());
     public int CritDamage => Mathf.RoundToInt(characterData.critDamage * critDamageMultiplier.GetMultiplier());
+    public float AttackSpeed => characterData.attackSpeed * attackSpeedMultiplier.GetMultiplier();
+    public float AttackRange => characterData.attackRange * attackRangeMultiplier.GetMultiplier();
+    public float AttackCooldown => 1f / AttackSpeed; // 공격속도 기반 계산형 쿨타임
+    public float MoveSpeed => characterData.moveSpeed;
 
     public virtual void Awake()
     {
@@ -36,9 +51,15 @@ public class BaseUnit : MonoBehaviour
         {
             CurrentHealth = characterData.maxHealth;
             CurrentMana = 0;
-
+            CurrentAttackCooldown = 1f / characterData.attackSpeed;
+            CurrentAttackRange = characterData.attackRange;
             animator = GetComponent<Animator>();
         }
+    }
+
+    public virtual void Start()
+    {
+
     }
 
     public virtual void Update()
@@ -54,19 +75,16 @@ public class BaseUnit : MonoBehaviour
     public void GainMana(float amount)
     {
         CurrentMana = Mathf.Min(CurrentMana + Mathf.RoundToInt(amount * manaRegenMultiplier.GetMultiplier()), characterData.maxMana);
-
-        if (CurrentMana >= MaxMana)
-        {
-            UseSkill(); // 자동 발동
-        }
     }
 
+    // 애니메이션 이벤트에서 참조
     public virtual void PerformBasicAttack()
     {
         Debug.Log($"{gameObject.name} 기본 공격!");
         // 기본 공격 데미지 계산 + 적용
     }
 
+    // 애니메이션 이벤트에서 참조
     public virtual void PerformSkill()
     {
         Debug.Log($"{gameObject.name} 스킬 발동!");
@@ -93,6 +111,8 @@ public class BaseUnit : MonoBehaviour
 
     public virtual void Die()
     {
-        Destroy(gameObject);
+        isDead = true;
+        if (animator) animator.SetTrigger("Die");
+        Destroy(gameObject, 1.5f);
     }
 }

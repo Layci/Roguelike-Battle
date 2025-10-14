@@ -81,7 +81,17 @@ public class BaseUnit : MonoBehaviour
     public virtual void PerformBasicAttack()
     {
         Debug.Log($"{gameObject.name} 기본 공격!");
-        // 기본 공격 데미지 계산 + 적용
+        // 타격 대상 탐색 (사거리 내의 플레이어나 적 등)
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, AttackRange);
+        foreach (var hit in hits)
+        {
+            BaseUnit target = hit.GetComponent<BaseUnit>();
+            if (target != null && target != this)
+            {
+                target.TakeDamage(AttackPower);
+                break; // 첫 번째 타격만 처리
+            }
+        }
     }
 
     // 애니메이션 이벤트에서 참조
@@ -98,6 +108,12 @@ public class BaseUnit : MonoBehaviour
 
         CurrentHealth -= finalDamage;
         if (CurrentHealth <= 0) Die();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, characterData != null ? characterData.attackRange : 1.5f);
     }
 
     public virtual void UseSkill()

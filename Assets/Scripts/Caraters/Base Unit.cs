@@ -35,7 +35,7 @@ public class BaseUnit : MonoBehaviour
     // 최종 계산된 값
     public int MaxHealth => Mathf.RoundToInt(characterData.maxHealth * healthMultiplier.GetMultiplier());
     public int MaxMana => characterData.maxMana;
-    public int ManaRegen => Mathf.RoundToInt(characterData.manaPerAttack * healthMultiplier.GetMultiplier());
+    public int ManaRegen => Mathf.RoundToInt(characterData.manaPerAttack * manaRegenMultiplier.GetMultiplier());
     public int AttackPower => Mathf.RoundToInt(characterData.attackPower * attackPowerMultiplier.GetMultiplier());
     public int SkillPower => Mathf.RoundToInt(characterData.skillPower * attackPowerMultiplier.GetMultiplier());
     public int CritChance => Mathf.RoundToInt(characterData.critChance * critChanceMultiplier.GetMultiplier());
@@ -77,6 +77,23 @@ public class BaseUnit : MonoBehaviour
         CurrentMana = Mathf.Min(CurrentMana + Mathf.RoundToInt(amount * manaRegenMultiplier.GetMultiplier()), characterData.maxMana);
     }
 
+    public void AttakRegenMana()
+    {
+        if (CurrentMana < MaxMana)
+        {
+            CurrentMana += ManaRegen;
+        }
+        else
+        {
+            CurrentMana = MaxMana;
+        }
+    }
+
+    public void ResetMana()
+    {
+        CurrentMana = 0;
+    }
+
     // 애니메이션 이벤트에서 참조
     public virtual void PerformBasicAttack()
     {
@@ -89,7 +106,8 @@ public class BaseUnit : MonoBehaviour
             if (target != null && target != this)
             {
                 target.TakeDamage(AttackPower);
-                break; // 첫 번째 타격만 처리
+                AttakRegenMana();
+                Debug.Log($"{gameObject.name}가 {target.gameObject.name}에게 {AttackPower}의 피해를 입혔습니다. 남은체력 : {target.CurrentHealth} 마나 : {target.CurrentMana}");
             }
         }
     }
@@ -99,6 +117,16 @@ public class BaseUnit : MonoBehaviour
     {
         Debug.Log($"{gameObject.name} 스킬 발동!");
         // 스킬 고유 효과 → 필요 시 자식 클래스에서 오버라이드
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, AttackRange);
+        foreach (var hit in hits)
+        {
+            BaseUnit target = hit.GetComponent<BaseUnit>();
+            if (target != null && target != this)
+            {
+                target.TakeDamage(SkillPower);
+                Debug.Log($"{gameObject.name}가 {target.gameObject.name}에게 {SkillPower}의 피해를 입혔습니다. 남은체력 : {target.CurrentHealth} 마나 : {target.CurrentMana}");
+            }
+        }
     }
 
     public void TakeDamage(int rawDamage)

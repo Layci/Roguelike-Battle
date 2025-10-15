@@ -40,8 +40,15 @@ public class UnitCombat2D : MonoBehaviour
         {
             nextAttackTime = Time.time + unit.characterData.attackCooldown;
 
-            unit.PerformBasicAttack();
+            unit.animator.SetTrigger("Attack");
         }
+        // 사거리 이내이고 마나가 최대치이면 스킬 사용
+        if (distance <= unit.characterData.attackRange && unit.CurrentMana >= unit.MaxMana)
+        {
+            unit.animator.SetTrigger("Skill");
+            unit.ResetMana(); // 스킬 사용 후 마나 초기화
+        }
+
     }
 
     private void FindTarget()

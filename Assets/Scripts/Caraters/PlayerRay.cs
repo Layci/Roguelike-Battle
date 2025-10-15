@@ -2,9 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*[RequireComponent(typeof(EnemyCombat2D))]
-[RequireComponent(typeof(EnemyChase2D))]*/
-public class EnemyDeath : BaseUnit
+public class PlayerRay : BaseUnit
 {
     public int mana = 0;
     public override void Awake()
@@ -22,10 +20,5 @@ public class EnemyDeath : BaseUnit
     {
         base.Update();
         mana = CurrentMana;
-    }
-
-    public override void PerformSkill()
-    {
-        //Instantiate(Resources)
     }
 }

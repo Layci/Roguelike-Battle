@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: Ray
   maxHealth: 2000
-  maxMana: 80
-  moveSpeed: 5
+  maxMana: 70
+  moveSpeed: 2
   attackPower: 100
   skillPower: 400
   armor: 5
   attackRange: 2
   attackSpeed: 1
   attackCooldown: 1
-  manaPerAttack: 10
+  manaPerAttack: 5
   critChance: 5
   critDamage: 100

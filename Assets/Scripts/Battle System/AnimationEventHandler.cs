@@ -4,22 +4,15 @@ using UnityEngine;
 
 public class AnimationEventHandler : MonoBehaviour
 {
-    private BaseUnit unit;
+    private EnemyDeath unit;
 
     void Awake()
     {
-        unit = GetComponent<BaseUnit>();
+        
     }
 
-    // 기본공격 이벤트
-    public void OnBasicAttack()
+    void DeathSkill()
     {
-        unit.PerformBasicAttack();
-    }
 
-    // 스킬 이벤트
-    public void OnSkillCast()
-    {
-        unit.PerformSkill();
     }
 }

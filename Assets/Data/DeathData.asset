@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e529666b030ff8e44b0d992ca3269ff1, type: 3}
   m_Name: DeathData
   m_EditorClassIdentifier: 
+  canEnrage: 1
+  enrageThreshold: 0.3
+  enrageAttackMultiplier: 1.2
+  enrageSkillMultiplier: 1.2
+  enrageMoveSpeedMultiplier: 1.3
   characterName: Death
   maxHealth: 2000
   maxMana: 100

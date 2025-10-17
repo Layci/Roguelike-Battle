@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e529666b030ff8e44b0d992ca3269ff1, type: 3}
   m_Name: RayData
   m_EditorClassIdentifier: 
+  canEnrage: 0
+  enrageThreshold: 0.5
+  enrageAttackMultiplier: 1.2
+  enrageSkillMultiplier: 1.2
+  enrageMoveSpeedMultiplier: 1.3
   characterName: Ray
   maxHealth: 2000
   maxMana: 70

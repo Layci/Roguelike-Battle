@@ -6,7 +6,6 @@ using UnityEngine;
 public class UnitChase2D : MonoBehaviour
 {
     public string targetTag = "Enemy"; // 이 유닛이 추적할 대상 태그
-    public float stoppingDistance = 0.5f; // 사거리보다 살짝 작은 멈춤 거리
 
     private BaseUnit unit;
     private Transform target;

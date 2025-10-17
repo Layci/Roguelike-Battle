@@ -27,6 +27,7 @@ public class BaseUnit : MonoBehaviour
     public Animator animator;
 
     // 현재 값
+    public UnitState CurrentState { get; private set; } = UnitState.Idle;
     public int CurrentHealth { get; private set; }
     public int CurrentMana { get; private set; }
     public float CurrentAttackRange { get; private set; }
@@ -65,6 +66,11 @@ public class BaseUnit : MonoBehaviour
     public virtual void Update()
     {
         
+    }
+
+    public virtual void ChangeState(UnitState newState)
+    {
+        CurrentState = newState;
     }
 
     public void Heal(float amount)
@@ -135,7 +141,28 @@ public class BaseUnit : MonoBehaviour
         int finalDamage = Mathf.RoundToInt(rawDamage * multiplier);
 
         CurrentHealth -= finalDamage;
-        if (CurrentHealth <= 0) Die();
+        if (CurrentHealth <= 0)
+        {
+            Die();
+        }
+        else if (characterData.canEnrage && CurrentHealth <= characterData.maxHealth * characterData.enrageThreshold)
+        {
+            OnEnrage();
+        }
+    }
+
+    protected virtual void OnEnrage()
+    {
+        if (!characterData.canEnrage) return; // 강화 불가 적이면 무시
+        if (CurrentState == UnitState.Enraged) return; // 이미 강화 상태면 무시
+
+        CurrentState = UnitState.Enraged;
+
+        // 데이터 기반 강화 수치 적용
+        attackPowerMultiplier.Add("Enrage", characterData.enrageAttackMultiplier);
+        characterData.moveSpeed *= characterData.enrageMoveSpeedMultiplier;
+
+        Debug.Log($"{gameObject.name} 이(가) 분노 상태로 돌입했습니다! (x{characterData.enrageAttackMultiplier})");
     }
 
     private void OnDrawGizmosSelected()

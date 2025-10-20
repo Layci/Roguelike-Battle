@@ -5,7 +5,29 @@ using UnityEngine;
 [System.Serializable]
 public class StatMultiplier
 {
-    // 단순 float 대신 key-value 관리 (버프 구분 가능)
+    private List<float> multipliers = new List<float>();
+
+    public void Add(float value)
+    {
+        multipliers.Add(value);
+    }
+
+    public void Remove(float value)
+    {
+        multipliers.Remove(value);
+    }
+
+    public float GetMultiplier()
+    {
+        float total = 1f;
+        foreach (float m in multipliers)
+        {
+            total *= m;
+        }
+        return total;
+    }
+
+    /*// 단순 float 대신 key-value 관리 (버프 구분 가능)
     private Dictionary<string, float> multipliers = new Dictionary<string, float>();
 
     /// <summary>
@@ -54,27 +76,6 @@ public class StatMultiplier
         Add(key, value);
         yield return new WaitForSeconds(duration);
         Remove(key);
-    }
-
-    /*private List<float> multipliers = new List<float>();
-
-    public void Add(float value)
-    {
-        multipliers.Add(value);
-    }
-
-    public void Remove(float value)
-    {
-        multipliers.Remove(value);
-    }
-
-    public float GetMultiplier()
-    {
-        float total = 1f;
-        foreach (float m in multipliers)
-        {
-            total *= m;
-        }
-        return total;
     }*/
+
 }

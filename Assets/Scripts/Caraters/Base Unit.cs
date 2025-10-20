@@ -38,7 +38,7 @@ public class BaseUnit : MonoBehaviour
     public int MaxMana => characterData.maxMana;
     public int ManaRegen => Mathf.RoundToInt(characterData.manaPerAttack * manaRegenMultiplier.GetMultiplier());
     public int AttackPower => Mathf.RoundToInt(characterData.attackPower * attackPowerMultiplier.GetMultiplier());
-    public int SkillPower => Mathf.RoundToInt(characterData.skillPower * attackPowerMultiplier.GetMultiplier());
+    public int SkillPower => Mathf.RoundToInt(characterData.skillPower * attackSkillPowerMultiplier.GetMultiplier());
     public int CritChance => Mathf.RoundToInt(characterData.critChance * critChanceMultiplier.GetMultiplier());
     public int CritDamage => Mathf.RoundToInt(characterData.critDamage * critDamageMultiplier.GetMultiplier());
     public float AttackSpeed => characterData.attackSpeed * attackSpeedMultiplier.GetMultiplier();

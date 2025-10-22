@@ -18,7 +18,7 @@ public class SpellManager : MonoBehaviour
         foreach (var card in acquiredCards)
         {
             if (card.rarity == CardRarity.Epic)
-                available.RemoveAll(c => c.name == card.name);
+                available.RemoveAll(c => c.spellName == card.spellName);
         }
 
         List<SpellCard> result = new List<SpellCard>();
@@ -46,10 +46,10 @@ public class SpellManager : MonoBehaviour
         {
             switch (card.effectType)
             {
-                case SpellEffectType.HealInstant:
+                case SpellEffectType.HealthBuff:
                     unit.Heal(card.value);
                     break;
-                case SpellEffectType.ManaInstant:
+                case SpellEffectType.ManaRegenBuff:
                     unit.GainMana(card.value);
                     break;
             }
@@ -63,27 +63,78 @@ public class SpellManager : MonoBehaviour
 
     private void ApplyBuff(BaseUnit unit, SpellCard card)
     {
+        float multiplier = 1f; // 기본 배율 1배
+
         switch (card.effectType)
         {
             case SpellEffectType.HealthBuff:
-                unit.healthMultiplier.Add(card.value);
+                multiplier = 1f + card.value; // ex) +0.2f → 1.2배
+                unit.healthMultiplier.Add(multiplier);
                 break;
+
             case SpellEffectType.ManaRegenBuff:
-                unit.manaRegenMultiplier.Add(card.value);
+                multiplier = 1f + card.value;
+                unit.manaRegenMultiplier.Add(multiplier);
                 break;
+
             case SpellEffectType.DamageReduction:
-                unit.damageTakenMultiplier.Add(-card.value);
+                multiplier = Mathf.Max(0f, 1f - card.value); // ex) 0.2f → 받는 피해 0.8배
+                unit.damageTakenMultiplier.Add(multiplier);
                 break;
+
             case SpellEffectType.DamageIncrease:
-                unit.attackPowerMultiplier.Add(card.value);
+                multiplier = 1f + card.value;
+                unit.attackPowerMultiplier.Add(multiplier);
                 break;
+
             case SpellEffectType.CritChanceBuff:
-                unit.critChanceMultiplier.Add(card.value);
+                multiplier = 1f + card.value;
+                unit.critChanceMultiplier.Add(multiplier);
                 break;
+
             case SpellEffectType.CritDamageBuff:
-                //unit.critDamageMultiplier.AddMultiplier(card.value);
+                multiplier = 1f + card.value;
+                unit.critDamageMultiplier.Add(multiplier);
                 break;
+                /*case SpellEffectType.HealthBuff:
+                    unit.healthMultiplier.Add(card.value);
+                    break;
+                case SpellEffectType.ManaRegenBuff:
+                    unit.manaRegenMultiplier.Add(card.value);
+                    break;
+                case SpellEffectType.DamageReduction:
+                    unit.damageTakenMultiplier.Add(-card.value);
+                    break;
+                case SpellEffectType.DamageIncrease:
+                    unit.attackPowerMultiplier.Add(card.value);
+                    break;
+                case SpellEffectType.CritChanceBuff:
+                    unit.critChanceMultiplier.Add(card.value);
+                    break;
+                case SpellEffectType.CritDamageBuff:
+                    unit.critDamageMultiplier.Add(card.value);
+                    break;*/
         }
+
+        // 초 단위 버프일 경우 자동 해제 코루틴 실행
+        if (card.durationType == SpellDurationType.Time && card.duration > 0f)
+        {
+            StartCoroutine(RemoveBuffAfterDuration(unit, card, card.duration));
+        }
+
+        // 웨이브 단위 / 영구 효과는 기존처럼 activeBuffs에 등록
+        else if (card.durationType != SpellDurationType.Time)
+        {
+            activeBuffs.Add(card);
+        }
+
+        card.appliedMultiplier = multiplier;
+    }
+
+    private IEnumerator RemoveBuffAfterDuration(BaseUnit unit, SpellCard card, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        RemoveBuff(unit, card); // 실제 해제는 여기서 호출
     }
 
     // 웨이브 종료 시 호출
@@ -105,22 +156,25 @@ public class SpellManager : MonoBehaviour
 
     private void RemoveBuff(BaseUnit unit, SpellCard card)
     {
+        float multiplier = 1f + card.value;
+
         switch (card.effectType)
         {
             case SpellEffectType.HealthBuff:
-                unit.healthMultiplier.Remove(card.value);
+                unit.healthMultiplier.Remove(multiplier);
                 break;
             case SpellEffectType.ManaRegenBuff:
-                unit.manaRegenMultiplier.Remove(card.value);
+                unit.manaRegenMultiplier.Remove(multiplier);
                 break;
             case SpellEffectType.DamageReduction:
-                unit.damageTakenMultiplier.Remove(-card.value);
+                multiplier = Mathf.Max(0f, 1f - card.value);
+                unit.damageTakenMultiplier.Remove(multiplier);
                 break;
             case SpellEffectType.DamageIncrease:
-                unit.attackPowerMultiplier.Remove(card.value);
+                unit.attackPowerMultiplier.Remove(multiplier);
                 break;
             case SpellEffectType.CritChanceBuff:
-                unit.critChanceMultiplier.Remove(card.value);
+                unit.critChanceMultiplier.Remove(multiplier);
                 break;
             case SpellEffectType.CritDamageBuff:
                 //unit.critDamageMultiplier.RemoveMultiplier(card.value);

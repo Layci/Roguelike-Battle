@@ -159,7 +159,7 @@ public class BaseUnit : MonoBehaviour
         CurrentState = UnitState.Enraged;
 
         // 데이터 기반 강화 수치 적용
-        attackPowerMultiplier.Add("Enrage", characterData.enrageAttackMultiplier);
+        attackPowerMultiplier.Add(characterData.enrageAttackMultiplier);
         characterData.moveSpeed *= characterData.enrageMoveSpeedMultiplier;
 
         Debug.Log($"{gameObject.name} 이(가) 분노 상태로 돌입했습니다! (x{characterData.enrageAttackMultiplier})");

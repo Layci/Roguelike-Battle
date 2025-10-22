@@ -27,6 +27,11 @@ public class StatMultiplier
         return total;
     }
 
+    public void Reset()
+    {
+        multipliers.Clear();
+    }
+
     /*// 단순 float 대신 key-value 관리 (버프 구분 가능)
     private Dictionary<string, float> multipliers = new Dictionary<string, float>();
 
